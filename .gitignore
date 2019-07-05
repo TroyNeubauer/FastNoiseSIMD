@@ -262,3 +262,5 @@ paket-files/
 /TEST/FastNoiseSIMD Preview
 /cellModel.skp
 /cellModel.skb
+
+FastNoiseSIMD\.vcxproj

@@ -4,7 +4,6 @@ project "FastNoiseSIMD"
 	cppdialect "C++17"
 	systemversion "latest"
 	intrinsics "on"
-	vectorextensions "AVX2"
 	
 	targetdir ("../../../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../../../bin-int/" .. outputdir .. "/%{prj.name}")

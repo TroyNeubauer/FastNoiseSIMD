@@ -29,25 +29,8 @@ project "FastNoiseSIMD"
 	{
 	
 	}
+
+	filter "toolset:clang or toolset:gcc"
+		print "Fast noise SIMD: Using -mavx2"
+		buildoptions { "-mavx2" }
 	
-	filter "configurations:Debug"
-		defines "HZ_DEBUG"
-		runtime "Debug"
-		symbols "on"
-		floatingpoint "Strict"
-
-	filter "configurations:Release"
-		defines "HZ_RELEASE"
-		runtime "Release"
-		runtime "Release"
-
-		optimize "speed"
-		inlining "auto"
-		floatingpoint "Fast"
-
-	filter "configurations:Dist"
-		defines "HZ_DIST"
-		runtime "Release"
-		optimize "speed"
-		inlining "auto"
-		floatingpoint "Fast"

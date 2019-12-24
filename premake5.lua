@@ -24,12 +24,13 @@ project "FastNoiseSIMD"
 		"FastNoiseSIMD/",
 	}
 
-	defines
-	{
-	
-	}
+	filter "system:windows or macosx or linux"
+		defines
+		{
+			"FN_COMPILE_SSE2",
+			"FN_COMPILE_SSE41",
+			"FN_COMPILE_AVX2",
+			"FN_COMPILE_AVX512",
+			--"FN_COMPILE_NEON",
+		}
 
-	filter "toolset:clang or toolset:gcc"
-		print "Fast noise SIMD: Using -mavx2"
-		buildoptions { "-mavx2" }
-	

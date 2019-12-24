@@ -64,57 +64,70 @@
 
 // CPUid
 #ifdef _WIN32
-#include <intrin.h>
+	#include <intrin.h>
 #elif defined(FN_ARM)
-#if !defined(__aarch64__) && !defined(FN_IOS)
-#include "ARM/cpu-features.h"
-#endif
+	#if !defined(__aarch64__) && !defined(FN_IOS)
+	#include "ARM/cpu-features.h"
+	#endif
+#elif defined(__EMSCRIPTEN__)
+	//Nop
 #else
-#include <cpuid.h>
-#include "inttypes.h"
+	//Linux, OSX, ect.
+	#include <cpuid.h>
+	#include "inttypes.h"
 #endif
 
 int FastNoiseSIMD::s_currentSIMDLevel = -1;
 
 #ifdef FN_ARM
-int GetFastestSIMD()
-{
-#if defined(__aarch64__) || defined(FN_IOS)
-	return FN_NEON;
-#else
-	if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM)
+	int GetFastestSIMD()
 	{
-		auto cpuFeatures = android_getCpuFeatures();
+	#if defined(__aarch64__) || defined(FN_IOS)
+		return FN_NEON;
+	#else
+		if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM)
+		{
+			auto cpuFeatures = android_getCpuFeatures();
 		
-		if (cpuFeatures & ANDROID_CPU_ARM_FEATURE_NEON)
-#ifdef FN_USE_FMA
-			if (cpuFeatures & ANDROID_CPU_ARM_FEATURE_NEON_FMA)
-#endif
-				return FN_NEON;
+			if (cpuFeatures & ANDROID_CPU_ARM_FEATURE_NEON)
+	#ifdef FN_USE_FMA
+				if (cpuFeatures & ANDROID_CPU_ARM_FEATURE_NEON_FMA)
+	#endif
+					return FN_NEON;
+		}
+
+		return FN_NO_SIMD_FALLBACK;
+	#endif
 	}
 
-	return FN_NO_SIMD_FALLBACK;
-#endif
-}
+#elif __EMSCRIPTEN__
+	//Assume no SIMD support on JS
+	int GetFastestSIMD()
+	{
+		return FN_NO_SIMD_FALLBACK;
+	}
+
 #else
 
 #ifdef _WIN32
-void cpuid(int32_t out[4], int32_t x) {
-	__cpuidex(out, x, 0);
-}
-uint64_t xgetbv(unsigned int x) {
-	return _xgetbv(x);
-}
-#else
-void cpuid(int32_t out[4], int32_t x) {
-	__cpuid_count(x, 0, out[0], out[1], out[2], out[3]);
-}
-uint64_t xgetbv(unsigned int index) {
-	uint32_t eax, edx;
-	__asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
-	return ((uint64_t)edx << 32) | eax;
-}
-#define _XCR_XFEATURE_ENABLED_MASK  0
+	void cpuid(int32_t out[4], int32_t x) {
+		__cpuidex(out, x, 0);
+	}
+	uint64_t xgetbv(unsigned int x) {
+		return _xgetbv(x);
+	}
+
+
+#else//Linux, OSX, etc.
+	void cpuid(int32_t out[4], int32_t x) {
+		__cpuid_count(x, 0, out[0], out[1], out[2], out[3]);
+	}
+	uint64_t xgetbv(unsigned int index) {
+		uint32_t eax, edx;
+		__asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
+		return ((uint64_t)edx << 32) | eax;
+	}
+	#define _XCR_XFEATURE_ENABLED_MASK  0
 #endif
 
 int GetFastestSIMD()

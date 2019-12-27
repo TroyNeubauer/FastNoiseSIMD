@@ -33,7 +33,7 @@ project "FastNoiseSIMD"
 			"FN_COMPILE_SSE2",
 			"FN_COMPILE_SSE41",
 			"FN_COMPILE_AVX2",
-			"FN_COMPILE_AVX512",
+			--"FN_COMPILE_AVX512",
 			--"FN_COMPILE_NEON",
 		}
 

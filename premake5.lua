@@ -8,8 +8,6 @@ project "FastNoiseSIMD"
 	targetdir ("../../../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../../../bin-int/" .. outputdir .. "/%{prj.name}")
 
-	filter "system:windows or linux or macosx"
-		vectorextensions "AVX2"
 
 	files
 	{
@@ -27,13 +25,16 @@ project "FastNoiseSIMD"
 		"FastNoiseSIMD/",
 	}
 
+	filter "system:windows or linux or macosx"
+		vectorextensions "AVX2"
+
 	filter "system:windows"
 		defines
 		{
 			"FN_COMPILE_SSE2",
 			"FN_COMPILE_SSE41",
 			"FN_COMPILE_AVX2",
-			--"FN_COMPILE_AVX512",
+			"FN_COMPILE_AVX512",
 			--"FN_COMPILE_NEON",
 		}
 

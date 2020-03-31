@@ -272,3 +272,11 @@ paket-files/
 /cellModel.skb
 
 FastNoiseSIMD\.vcxproj
+
+
+#Android
+**/AndroidManifest.xml
+.modules
+**/build.gradle
+**/CMakeLists.txt
+
